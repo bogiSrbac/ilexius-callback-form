@@ -1,0 +1,5 @@
+Django API is shown but it needed to be modified much more in save() method.
+It should be added model
+	class CustomerDistinctTable()
+with fields first_name, last_name, email, phone_number and company which will be inserted by data
+during validation of callback form but it would be chacked by query if customer alredy exist.

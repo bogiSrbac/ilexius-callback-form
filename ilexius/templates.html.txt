@@ -1,0 +1,6 @@
+1.customerServiceSupport.html
+Shows customerCallback form and functionality has been described in view.txt.
+
+2.customerServiceSupport_list.html
+Shows Admin panel and functionality functionality has been described in view.txt.
+

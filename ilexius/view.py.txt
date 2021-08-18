@@ -1,0 +1,47 @@
+1.first function FBV
+createCustomerView()
+	- triggered on ajax call from template customerServiceSupport.html (in navbar Customer service Support) script POST function formCreateCallbackFunction() which
+	send data from customer entered in callback form
+	- function validate data for example:
+		* steps of 30 minutes
+		* if datetime is in past
+		* if customer with same first name, second name and email alredy has term(this can be much more wider)
+		* if customer did not enter datetime to give him first available term
+		* to filter date and time according to requested tasks
+		* to chack if phone number and email are in good format(if not it will not pass is.validate part, but will bi checked on next else condition)
+		* send email to customer with term date and time
+2.FBV
+checkFreeTermsFunction()
+	- triggered on ajax call from template customerServiceSupport.html (in navbar Customer service Support) script POST function checkFreeTermsByCalendar() which pull free terms
+	from databease and present free terms to customer on particular date.
+	- after that user choose free term by click which insert choosen date in main callback form.
+	(I didn't have time to make query for free time on present day)
+
+3.FBV
+tenDaysFunction():
+	- triggered on ajax call from tendaysFunction with 'DOMContentLoaded' event which insert free terms for next ten days in customerServiceSupport.html (in navbar Customer service Support)which insert data and time
+	in main callback form by click on any of given free terms.
+	(as previus, I didn't have time to make query for free time on present day, or to be precise I noticed that too late)
+
+4.CBV:
+class CustomerCallbackList(ListView, LoginRequiredMixin):
+	- list all sheduled callback term whic are in realised status False in template customerServiceSupport_list.html (in navbar Admin)
+	- it is protected by loginmixin and apppeare on login.
+	- if click on date link its show scheduled terms on that day.
+	- if click on term it insert data in windows in right side
+	- also in form for adding comments for customer callback
+	- it is possible just after term is passed
+5.FBV:
+updateComment(): 
+	- after you chose customer with passed data, you are supposed to enter comment and change boolen field to yes, which mean that you evaluated and processed
+	customer issue.
+	- after submit, next time that term will not be visible on that list and it will be created in archive model which can be later used for other tasks.
+	- it is protected by decorator
+6.FBV
+ makeCallbacksRealized()
+	- is the same as in celery.py tasks.py function. It has role to all unrealized callback turn in realized True but
+	marked in comment 'This callback was not realized', and admin 'by_sys'. It used if celery doesn't work. 
+	- triggered on ajax call from archiveCallback.js
+
+
+	

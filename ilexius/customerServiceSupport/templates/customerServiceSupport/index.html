@@ -1,0 +1,14 @@
+{% extends 'customerServiceSupport/base.html' %}
+{% load static %}
+{% block index %}
+<div class="container-fluid" style="margin-top: 5rem">
+<div class="jumbotron" style="background: url('/customerServiceSupport/media/images/ilexius.jpg')")>
+  <h1 class="display-4 text-success">Welcome to ILEXIUS Home Page</h1>
+  <p class="lead text-success">We are the leaders in software development</p>
+  <hr class="my-4">
+  <p class="text-white">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae blanditiis dicta distinctio eos facilis ipsum nobis numquam officia quod quos, repellat saepe soluta temporibus velit voluptas. Adipisci eius ex harum ut voluptatem. Amet distinctio eius excepturi harum, impedit itaque nisi quia sapiente sequi sint temporibus tenetur ullam voluptates! Laudantium, suscipit.
+  </p>
+  <a class="btn btn-primary btn-lg" href="{% url 'customerServiceSupport:customer-create-form' %}" role="button">Go to Customer Callback Page</a>
+</div>
+</div>
+{% endblock %}

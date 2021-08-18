@@ -1,0 +1,56 @@
+.seperator{
+    padding-bottom: 0.3rem;
+}
+#available-dates{
+    display: flex;
+    justify-content: left;
+    align-self: flex-start;
+    flex-wrap: wrap;
+}
+
+.gate-date{
+    padding: 0.3rem;
+    width: 1rem;
+    height: 0.7rem;
+    background-color: #555555;
+    color: #eeeeee;
+    border-radius: 15%;
+}
+
+.get-date:hover{
+    cursor: pointer;
+}
+.get-date-ten:hover{
+    cursor: pointer;
+}
+.list-group-item:hover{
+    cursor: pointer;
+}
+
+ol {
+  list-style: none;
+  counter-reset: steps;
+}
+ol li {
+  counter-increment: steps;
+}
+ol li::before {
+  content: counter(steps);
+  margin-right: 0.5rem;
+  background: #ff6f00;
+  color: white;
+  width: 1.2em;
+  height: 1.2em;
+  border-radius: 50%;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1.2em;
+}
+ol ol li::before {
+  background: darkorchid;
+}
+
+#add-text{
+    display: none;
+}
+

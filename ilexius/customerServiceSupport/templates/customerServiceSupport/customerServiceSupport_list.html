@@ -1,0 +1,157 @@
+{% extends 'customerServiceSupport/base.html' %}
+{% load static %}
+{% block customerSupportList %}
+    {% load crispy_forms_tags %}
+
+
+    {% if user.is_authenticated %}
+        {% if not customer_list %}
+<div class="container" style="margin-top: 5rem">
+<h4 class="diplay-4 text-warning">You have no data in your database</h4></div>
+            {% endif %}
+
+
+
+<div class="container" style="margin-top: 7rem">
+    {#    modal #}
+    <div class="modal" tabindex="-1" role="dialog" id="myModal2">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Callback feedback</h5>
+        <button type="button" class="close3" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-left">
+        <h5 id="error-text1" class="text-warning"></h5>
+          <h5 id="success-text1"></h5>
+          <div class="container-fluid" id="available-dates"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary close4" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{#  modal end #}
+<h3 class="text-primary mt-3">ADMIN SECTION</h3>
+<div class="row text-left">
+    <div class="col-md-7">
+    <div id="accordion">
+        {% for date in dates %}
+
+  <div class="card">
+    <div class="card-header" id="header-{{ forloop.counter0 }}" >
+      <h5 class="mb-0">
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collapsed-{{ forloop.counter0 }}" aria-expanded="true" aria-controls="collapsed-{{ forloop.counter0 }}">
+         Terms for date: {{ date|date:'d-m-Y' }}
+        </button>
+      </h5>
+    </div>
+    {% if forloop.counter0 == 0 %}
+    <div id="collapsed-{{ forloop.counter0 }}" class="collapse show" aria-labelledby="header-{{ forloop.counter0 }}" data-parent="#accordion">
+      <div class="card-body">
+      <ul class="list-group list-group-flush">
+          {% for data in customer_list %}
+              {% if date|date:'d-m-Y' ==  data.date_and_time_for_callback|date:'d-m-Y'%}
+                  {% if data.realized == False %}
+
+                  <span style="display: none" class="id">{{ data.pk }}</span><li class="list-group-item">{{ data.last_name }} {{ data.first_name }} {{ data.email }} Term on {{ data.date_and_time_for_callback|date:'d-m-Y' }} at {{ data.date_and_time_for_callback|date:'H:i' }}</li>
+
+              {% endif %}
+              {% endif %}
+          {% endfor %}
+      </ul>
+      </div>
+    </div>
+  {% else %}
+        <div id="collapsed-{{ forloop.counter0 }}" class="collapse" aria-labelledby="header-{{ forloop.counter0 }}" data-parent="#accordion">
+      <div class="card-body">
+          {% for data in customer_list %}
+              {% if date|date:'d-m-Y' ==  data.date_and_time_for_callback|date:'d-m-Y'%}
+                   {% if data.realized == False %}
+
+                    <span style="display: none" class="id">{{ data.pk }}</span><li class="list-group-item">{{ data.last_name }} {{ data.first_name }} {{ data.email }} Term on {{ data.date_and_time_for_callback|date:'d-m-Y' }} at {{ data.date_and_time_for_callback|date:'H:i' }}</li>
+              {% endif %}
+              {% endif %}
+          {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  </div>
+{% endfor %}
+</div>
+    </div>
+    <div class="col-md-5">
+
+        <div class="container-fluid flex-column">
+            <h5 class="text-secondary">Details for chosen customer</h5>
+            <div class="overflow-auto container mb-4 border border-secondary rounded"style="height: 25rem">
+
+            <ul class="list-group list-group-flush" id="loopCustomerData">
+
+            </ul>
+            </div>
+            <div class="container">
+                <h5 class="text-secondary">Add comment form</h5>
+                <form method="post" id="formComment">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group col-md-6 mb-0">
+            {{ form.comment|as_crispy_field }}
+        </div>
+    </div>
+
+        <div class="form-row">
+        <div class="form-group col-md-6 mb-0">
+            {{ form.realized|as_crispy_field }}
+        </div>
+        <div class="form-group col-md-6 mb-0">
+            {{ form.update|as_crispy_field }}
+        </div>
+    </div>
+        <div class="form-row  justify-content-start">
+        <div class="form-group col-md-6 mb-0">
+            {{ form.administrator|as_crispy_field }}
+        </div>
+    </div>
+
+
+        <button type="submit" class="btn btn-primary align-self-start" id="commentSubmitButton">Submit</button>
+                     <small class="text-muted add-text">
+      You can not use form for valid terms
+    </small>
+    </form>
+
+            </ul>
+            </div>
+
+            <div class="container mt-3 mb-5">
+                <h5 class="text-left text-warning">Archive callbacks which terms are passed</h5>
+                <button type="submit" class="btn btn-primary align-self-start" id="archive-data">Archive callbacks</button>
+            </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+</div>
+    {% endif %}
+<script src={% static 'js/getUserData.js' %}></script>
+<script src="{% static 'js/archiveCallbacks.js' %}"></script>
+
+    <script>
+
+
+
+
+    </script>
+{% endblock %}

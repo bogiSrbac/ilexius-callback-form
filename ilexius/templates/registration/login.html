@@ -1,0 +1,46 @@
+{% extends 'customerServiceSupport/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block login %}
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-8">
+          <hr class="mt-0 mb-4">
+<div class="container text-left" style="margin-top: 10rem">
+  {% if form.errors %}
+    <p>Your email and password are not valid! Please try again</p>
+  {% endif %}
+
+  {% if next %}
+    {% if user.is_authenticated %}
+      <p>Your account have no permission to access to this data. Log in with proper data</p>
+    {% else %}
+      <p>Log in to access to this account!</p>
+    {% endif %}
+  {% endif %}
+
+  <form method="post" action="{% url 'login' %}">
+
+    {% csrf_token %}
+    <table id="login-table">
+      <tr>
+        <td>{{ form.username.label_tag }}</td>
+        <td>{{ form.username }}</td>
+      </tr>
+      <tr>
+        <td>{{ form.password.label_tag }}</td>
+        <td>{{ form.password }}</td>
+      </tr>
+    </table>
+    <input type="submit" value="Log in" class="submit"/>
+    <input type="hidden" name="next" value="{{ next }}" />
+  </form>
+
+  {# Assumes you setup the password_reset view in your URLconf #}
+   <p><a href="{% url 'password_change' %}">Change password?</a> </p>
+  <p><a href="{% url 'password_reset' %}">Reset password?</a></p>
+</div>
+</div>
+      </div>
+    </div>
+{% endblock %}

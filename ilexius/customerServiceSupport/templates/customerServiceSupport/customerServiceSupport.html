@@ -1,0 +1,339 @@
+{% extends 'customerServiceSupport/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block customerSupport %}
+{#    modal #}
+    <div class="modal" tabindex="-1" role="dialog" id="myModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Callback feedback</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-left">
+        <h5 id="error-text" class="text-warning"></h5>
+          <h5 id="success-text"></h5>
+          <div class="container-fluid" id="available-dates"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary close2" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{#  modal end #}
+
+
+
+    <div class="container text-left" style="margin-top: 7rem">
+    <h1 class="display-4 mb-4 text-success">Callback Form</h1>
+
+        <div class="row text-left">
+            <div class="col-lg-8 border border-secondary rounded p-2">
+                <form method="post" id="formCustomer">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group col-md-6 mb-0">
+            {{ formCustomer.first_name|as_crispy_field }}
+        </div>
+        <div class="form-group col-md-6 mb-0">
+            {{ formCustomer.last_name|as_crispy_field }}
+        </div>
+    </div>
+
+        <div class="form-row">
+        <div class="form-group col-md-6 mb-0">
+            {{ formCustomer.phone_number|as_crispy_field }}
+        </div>
+        <div class="form-group col-md-6 mb-0">
+            {{ formCustomer.company|as_crispy_field }}
+        </div>
+    </div>
+        <div class="form-row  justify-content-start">
+        <div class="form-group col-md-6 mb-0">
+            {{ formCustomer.email|as_crispy_field }}
+        </div>
+    </div>
+
+        <div class="form-row  justify-content-start">
+        <div class="form-group col-md-6 mb-0">
+            {{ formCustomer.subject|as_crispy_field }}
+        </div>
+    </div>
+        <div class="form-row">
+        <div class="form-group col-md-12 mb-0">
+            {{ formCustomer.problem_description|as_crispy_field }}
+        </div>
+    </div>
+        <div class="form-row  justify-content-start">
+        <div class="form-group col-md-6 mb-0">
+            {{ formCustomer.date_and_time_for_callback|as_crispy_field }}
+        </div>
+    </div>
+
+       <div class="form-row  justify-content-start">
+        <div class="form-group col-md-6 mb-0">
+            {{ formCustomer.captcha|as_crispy_field }}
+        </div>
+    </div>
+
+        <button type="submit" class="btn btn-primary align-self-start">Submit</button>
+    </form>
+            </div>
+            <div class="col-lg-4 mt-4 mt-lg-0">
+                <h4 class="text-success">Check free terms by calendar</h4>
+                <div class="container-fluid border border-secondary p-2 rounded mb-4">
+                    <h6 class="text-secondary">Calendar option</h6>
+                    <form method="post" id="checkDate">
+                        {% csrf_token %}
+                          <div class="form-group">
+                            <label for="checkFreeTerms">Check free terms:</label>
+                            <input type="text" name="checkFreeTerms" class="form-control" id="checkFreeTerms" aria-describedby="emailHelp" autocomplete="off">
+                          </div>
+                          <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Captcha</label>
+                              <small id="passwordHelpBlock" class="form-text text-muted">
+                                Uncheck and check again to change date
+                                </small>
+                          </div>
+                          <button type="submit" class="btn btn-primary" id="checkFreeDay">Submit</button>
+                        <small class="text-muted add">Click on time to insert in main form</small>
+                    </form>
+                </div>
+                <h4 class="text-success">Check free terms in next 10 days</h4>
+                <div class="overflow-auto border border-secondary rounded p-2 flex-column" style="height: 25rem" id="addTenDays">
+
+                </div>
+            </div>
+
+
+
+        </div>
+
+    </div>
+<script src="{% static 'js/datetimepicker-master/jquery.js' %}"></script>
+<script src="{% static 'js/datetimepicker-master/build/jquery.datetimepicker.full.js' %}"></script>
+<script src="{% static 'js/tenDaysFunction.js' %}"></script>
+<script>
+
+{# date time picker#}
+
+var logic = function( currentDateTime ){
+  // 'this' is jquery object datetimepicker
+  listOfDays = [0, 1, 2, 3, 4];
+  if( currentDateTime.getDay() === 6){
+    this.setOptions({
+      minTime:'08:00',
+      maxTime:'13:01'
+    });
+  }else
+    this.setOptions({
+      minTime:'8:00',
+      maxTime:'20:01',
+    });
+};
+
+
+
+$("#id_date_and_time_for_callback").datetimepicker({
+    step:30,
+    disabledWeekDays:[0],
+    format:'m/d/Y H:i',
+    onChangeDateTime:logic,
+    onShow:logic
+});
+
+
+{# form submit asynh#}
+let messageError = document.getElementById('error-text');
+let messageSuccess = document.getElementById('success-text');
+let close = document.querySelector('.close');
+let close2 = document.querySelector('.close2');
+
+
+const first_name = document.getElementById('id_first_name');
+const last_name = document.getElementById('id_last_name');
+const phone_number = document.getElementById('id_phone_number');
+const company = document.getElementById('id_company');
+const email = document.getElementById('id_email');
+const subject = document.getElementById('id_subject');
+const problem_description = document.getElementById('id_problem_description');
+const date_and_time_callback = document.getElementById('id_date_and_time_for_callback');
+const captcha = document.getElementById('id_captcha');
+const captcha1 = document.getElementById('id_captcha_1');
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken1 = getCookie('csrftoken');
+
+function formCreateCallbackFunction() {
+    const fKontakt = document.getElementById('formCustomer');
+    fKontakt.addEventListener('submit', e=>{
+        e.preventDefault();
+        console.log('test1');
+        const fkontaktXHR = new FormData();
+        fkontaktXHR.append('csrfmiddlewaretoken', csrftoken1);
+        fkontaktXHR.append('first_name', first_name.value);
+        fkontaktXHR.append('last_name', last_name.value);
+        fkontaktXHR.append('phone_number', phone_number.value);
+        fkontaktXHR.append('company', company.value);
+        fkontaktXHR.append('email', email.value);
+        fkontaktXHR.append('subject', subject.value);
+        fkontaktXHR.append('problem_description', problem_description.value);
+        fkontaktXHR.append('date_and_time_for_callback', date_and_time_callback.value);
+        fkontaktXHR.append('g-recaptcha-response', grecaptcha.getResponse());
+        console.log(first_name.value, last_name.value, phone_number.value);
+        let fSubmitXHR = new XMLHttpRequest();
+        fSubmitXHR.responseType = 'json';
+        fSubmitXHR.enctype = 'multipart/form-data';
+        fSubmitXHR.data = fkontaktXHR;
+        let fURL = '/customer-service-support/';
+        fSubmitXHR.open('POST', fURL, true);
+        fSubmitXHR.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        console.log('test2');
+        fSubmitXHR.onload = function () {
+            dataF = fSubmitXHR.response;
+            console.log('test3');
+
+            if(dataF.error){
+                messageError.innerHTML = dataF.error;
+                triggerModal()
+             }else if(dataF.message){
+                messageError.innerHTML = dataF.message;
+                triggerModal()
+            }else if(dataF.steps){
+                messageError.innerHTML = dataF.steps;
+                triggerModal()
+            }else if(dataF.failure){
+                messageError.innerHTML = dataF.failure;
+                triggerModal()
+            }else if(dataF.email){
+                messageError.innerHTML = dataF.email;
+                triggerModal()
+            }
+            else if(dataF.phone){
+                messageError.innerHTML = dataF.phone;
+                triggerModal()
+            }else{
+                messageSuccess.innerHTML = dataF.success;
+                triggerModal()
+            }
+
+            close.addEventListener('click', ()=>{
+                messageError.innerText = '';
+                messageSuccess.innerHTML = '';
+            });
+            close2.addEventListener('click', ()=>{
+                messageError.innerText = '';
+                messageSuccess.innerHTML = '';
+            })
+
+        };
+        fSubmitXHR.send(fkontaktXHR);
+        console.log(fkontaktXHR);
+        console.log('test1');
+    })
+}
+
+
+{# modal function bootstrap#}
+function triggerModal() {
+         $("#myModal").modal('show');
+
+}
+
+{# check free term#}
+
+$("#checkFreeTerms").datetimepicker({
+    timepicker:false,
+    disabledWeekDays:[0],
+    format:'Y-m-d',
+});
+
+const buttonCheckTerms = document.getElementById('checkFreeDay');
+const textField = document.getElementById('text-inpu-check');
+const formFieldDate = document.getElementById('checkFreeTerms');
+const available_dates = document.getElementById('available-dates');
+
+const formChackDate = document.getElementById('checkDate');
+
+function checkFreeTermsByCalendar(){
+    formChackDate.addEventListener('submit', e=>{
+            e.preventDefault();
+            console.log('test1');
+            const fcheckXHR = new FormData();
+            fcheckXHR.append('csrfmiddlewaretoken', csrftoken1);
+            fcheckXHR.append('checkFreeTerms', formFieldDate.value);
+            console.log(formFieldDate.value);
+            let fSubmitXHRnew = new XMLHttpRequest();
+            fSubmitXHRnew.responseType = 'json';
+            fSubmitXHRnew.enctype = 'multipart/form-data';
+            fSubmitXHRnew.data = fcheckXHR;
+            let fURL = '/free-terms-check/';
+            fSubmitXHRnew.open('POST', fURL, true);
+            fSubmitXHRnew.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            console.log('test2');
+            let htmlTag = '';
+            fSubmitXHRnew.onload = function () {
+                dataCheck = fSubmitXHRnew.response;
+
+                if(dataCheck.error){
+                    messageError.innerHTML = dataCheck.error;
+                    triggerModal()}else {
+
+                for (let key in dataCheck.dates){
+
+                    for(let data in dataCheck.dates[key]) {
+                        available_dates.innerHTML += `<span class="badge badge-secondary ml-1 mt-1 get-date">${dataCheck.dates[key][data]}</span>`
+                    }
+                }
+
+
+                close.addEventListener('click', ()=>{
+                    available_dates.innerHTML = '';
+                    messageError.innerText = ''
+                })
+                close2.addEventListener('click', ()=>{
+                    available_dates.innerHTML = '';
+                    messageError.innerText = '';
+                })
+                console.log('test3');
+
+
+                messageError.innerHTML = `Empty terms on ${Object.keys(dataCheck.dates)}`;
+                triggerModal()
+                const getTermByCalendar = document.querySelectorAll('.get-date');
+                for(let i = 0; i < getTermByCalendar.length; i++){
+                    getTermByCalendar[i].addEventListener('click', ()=>{
+                        console.log('nesto');
+                        date_and_time_callback.value = `${Object.keys(dataCheck.dates)} ${getTermByCalendar[i].innerHTML}`
+                    })
+                }}
+            }
+            fSubmitXHRnew.send(fcheckXHR);
+        })
+}
+
+formCreateCallbackFunction();
+checkFreeTermsByCalendar()
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,43 @@
+1.install celery pip install celery
+
+
+2.install redis for windows(Redis-x64-5.0.10.msi):
+https://github.com/tporadowski/redis/releases
+
+3.u powershell pip install redis
+
+4. start celery and create worker in terminal:
+
+celery -A prviApp worker -l INFO
+
+for windows
+celery -A my_project_name worker --pool=solo -l info
+
+5.install django-celery-results:
+pip install --user django-celery-results
+
+6.for scheduled tasks install:
+pip install django-celery-beat
+
+7.command in win shell to create scheduled task
+celery -A ilexius beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler 
+
+celery.py 
+app.conf.beat_schedule = {
+    'archive-callbacks':{
+        'task': 'customerServiceSupport.tasks.makeCallbacksRealizedCelery',
+        'schedule': crontab(hour=20, day_of_week='mon-fri')
+    },
+    'archive-callbacks-saturday':{
+        'task': 'customerServiceSupport.tasks.makeCallbacksRealizedCelery',
+        'schedule': crontab(hour=13, day_of_week='sun')
+    }
+}
+
+is going to run function makeCallbacksRealizedCelery() in tasks.py which will perform changes in model Customer and Archive
+on every weekday at 20h and on saturday ad 13h.
+
+I test it just on one day at 20h.
+
+
+
